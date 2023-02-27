@@ -30,3 +30,8 @@ def capture_and_send():
     except Exception as e:
         print (e.__class__.__name__)
 ```
+3. To invoke the function use
+```
+byte_response = capture_and_send()
+response = int(byte_response.decode())
+```
