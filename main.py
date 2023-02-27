@@ -8,7 +8,8 @@ from run_detect import handle_detect, handle_stiching
 
 k = 4 # Change this on the actual day
 image_hub = imagezmq.ImageHub('tcp://*:5556')
-capture_path = os.path.join(os.getcwd(), 'captures') # Images from rpi captures
+capture_path = os.path.join(os.getcwd(), 'captures') 
+result_path = os.path.join(os.getcwd(), 'results') 
 stitch_path = os.path.join(os.getcwd(), 'stitch') 
 current_time = time.time()
 is_stitched = False
@@ -68,15 +69,20 @@ def run():
             # image_hub.send_reply(str.encode(results))
             image_hub.send_reply(str.encode(symbol_to_letter[results]))
         else:
-            image_hub.send_reply(b'nothing_detected')
+            print('Nothing detected')
+            image_hub.send_reply(b'-1')
     else:
         image_hub.send_reply(b'Time limit ...')
 
 if __name__ == "__main__":
     
     if os.path.exists(capture_path) and os.path.isdir(capture_path):
-        print(f'Removing folder {capture_path}')
+        print(f'Removing folder {capture_path} + {result_path}')
         shutil.rmtree(capture_path)
+        shutil.rmtree(result_path)
+    if not os.path.exists(result_path):
+        print(f'Creating folder {result_path}')
+        os.makedirs(result_path)
     if not os.path.exists(capture_path):
         print(f'Creating folder {capture_path}')
         os.makedirs(capture_path)
