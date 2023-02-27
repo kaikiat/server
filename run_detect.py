@@ -6,39 +6,6 @@ from PIL import Image
 import torch
 
 
-symbol_to_letter = {
-    'one': '11',
-    'two': '12',
-    'three': '13',
-    'four': '14',
-    'five': '15',
-    'six': '16',
-    'seven': '17',
-    'eight': '18',
-    'nine': '19',
-    'A': '20',
-    'B': '21',
-    'C': '22',
-    'D': '23',
-    'E': '24',
-    'F': '25',
-    'G': '26',
-    'H': '27',
-    'S': '28',
-    'T': '29',
-    'U': '30',
-    'V': '31',
-    'W': '32',
-    'X': '33',
-    'Y': '34',
-    'Z': '35',
-    'left': '39',
-    'up': '36',
-    'right': '38',
-    'down': '37',
-    'circle': '40',
-    'bulleye': '0'
-}
 result_path = os.path.join(os.getcwd(), 'results') # Stitched images are stored here 
 stiched_path = os.path.join(os.getcwd(), 'stitch') # Stitched images are stored here 
 abs_weight_path = os.path.join(os.getcwd(), 'best.pt')

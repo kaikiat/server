@@ -1,7 +1,3 @@
-## Getting started
-1. In your local computer, run `python main.py`, make sure you are connected to MDP-1. the server will start accepting images from the RPI.
-2. In the RPI, add the following code and change the host address
-```
 import time
 import imagezmq
 import socket
@@ -30,4 +26,14 @@ def capture_and_send():
         return response
     except Exception as e:
         print (e.__class__.__name__)
-```
+
+if __name__ == "__main__":
+    print('Setting up picam2')
+    time.sleep(DELAY)
+    while True:
+        print('Preparing to capture photo')
+        start = time.time()
+        byte_response = capture_and_send()
+        response = int(byte_response.decode())
+        end = time.time()
+        print(f'{response}, Time taken: {end-start}')
