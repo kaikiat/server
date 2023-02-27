@@ -6,7 +6,7 @@ from collections import defaultdict
 from PIL import Image
 from run_detect import handle_detect, handle_stiching
 
-k = 4 # Change this on the actual day
+k = 5 # Change this on the actual day
 image_hub = imagezmq.ImageHub('tcp://*:5556')
 capture_path = os.path.join(os.getcwd(), 'captures') 
 result_path = os.path.join(os.getcwd(), 'results') 
@@ -66,13 +66,12 @@ def run():
         results = handle_detect(capture_filepath,unique_results_above_confidence)
         print(f'Results {results}')
         if isinstance(results,str):
-            # image_hub.send_reply(str.encode(results))
             image_hub.send_reply(str.encode(symbol_to_letter[results]))
         else:
             print('Nothing detected')
             image_hub.send_reply(b'-1')
     else:
-        image_hub.send_reply(b'Time limit ...')
+        image_hub.send_reply(b'STOP')
 
 if __name__ == "__main__":
     
