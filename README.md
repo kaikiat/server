@@ -8,8 +8,7 @@ import socket
 from picamera2 import Picamera2, Preview
 from libcamera import Transform
 
-# Receiver address, use ifconfig to check
-ADDRESS = 'tcp://192.168.1.21:5556' 
+ADDRESS = 'tcp://192.168.1.21:5556' # Receiver address, use ifconfig to check
 HOST = socket.gethostname()
 DELAY = 2
 
