@@ -1,0 +1,3 @@
+[submodule "image-recognition/server/yolov5"]
+	path = server/yolov5
+	url = https://github.com/ultralytics/yolov5.git
