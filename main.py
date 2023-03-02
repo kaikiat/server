@@ -2,17 +2,19 @@ import imagezmq
 import time
 import os
 import shutil
+import socket
 from collections import defaultdict
 from PIL import Image
 from run_detect import handle_detect, handle_stiching
 
 k = 5 # Change this on the actual day
-image_hub = imagezmq.ImageHub('tcp://*:5556')
+image_hub = imagezmq.ImageHub()
 capture_path = os.path.join(os.getcwd(), 'captures') 
 result_path = os.path.join(os.getcwd(), 'results') 
 stitch_path = os.path.join(os.getcwd(), 'stitch') 
 current_time = time.time()
-is_stitched = False
+# UnboundLocalError: local variable 'is_stitched' referenced before assignment
+# is_stitched = False 
 duration = 360 # in seconds
 unique_results_above_confidence = defaultdict()
 symbol_to_letter = {
@@ -54,8 +56,11 @@ def run():
     rpi_name, image = image_hub.recv_image()
     
     print(f'Received image : {rpi_name}')
-    if not is_stitched and len(unique_results_above_confidence) >= k or \
+    # if not is_stitched and len(unique_results_above_confidence) >= k or \
+    if len(unique_results_above_confidence) >= k or \
         time.time() >= current_time + duration:
+        if time.time() >= current_time + duration:
+            print('Exceeded allowed time to complete maze')
         handle_stiching(k,unique_results_above_confidence)
         image_hub.close()
     elif time.time() < current_time + duration:    
@@ -88,6 +93,7 @@ if __name__ == "__main__":
     if not os.path.exists(stitch_path):
         print(f'Creating folder {stitch_path}')
         os.makedirs(stitch_path)
+    is_stitched = False
 
     print('Starting up server')
     while True:

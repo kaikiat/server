@@ -8,7 +8,7 @@ import socket
 from picamera2 import Picamera2, Preview
 from libcamera import Transform
 
-ADDRESS = 'tcp://192.168.1.21:5556' # Receiver address, use ifconfig to check
+ADDRESS = 'tcp://192.168.1.21:5555' # Receiver address, use ifconfig to check
 HOST = socket.gethostname()
 DELAY = 2
 
@@ -28,7 +28,7 @@ def capture_and_send():
         response = sender.send_image(HOST, nparray)
         return response
     except Exception as e:
-        print (e.__class__.__name__)
+        print(e)
 ```
 3. To invoke the function use
 ```
