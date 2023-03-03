@@ -56,7 +56,6 @@ def run():
     rpi_name, image = image_hub.recv_image()
     
     print(f'Received image : {rpi_name}')
-    # if not is_stitched and len(unique_results_above_confidence) >= k or \
     if len(unique_results_above_confidence) >= k or \
         time.time() >= current_time + duration:
         if time.time() >= current_time + duration:
@@ -69,14 +68,14 @@ def run():
                             f'{str(int(time.time()))}.jpeg')
         image_memory.save(capture_filepath)
         results = handle_detect(capture_filepath,unique_results_above_confidence)
-        print(f'Results {results}')
+        print(f'Results {results} for file: {str(capture_filepath)}')
         if isinstance(results,str):
             image_hub.send_reply(str.encode(symbol_to_letter[results]))
         else:
             print('Nothing detected')
             image_hub.send_reply(b'-1')
-    else:
-        image_hub.send_reply(b'STOP')
+    # else:
+    #     image_hub.send_reply(b'STOP')
 
 if __name__ == "__main__":
     
@@ -98,8 +97,3 @@ if __name__ == "__main__":
     print('Starting up server')
     while True:
         run()
-    
-    # finally:
-        # image_hub.close()
-        # handle_stiching()
-
