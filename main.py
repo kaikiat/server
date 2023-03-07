@@ -72,7 +72,7 @@ def run():
         if isinstance(results,str):
             image_hub.send_reply(str.encode(symbol_to_letter[results]))
         else:
-            print('Nothing detected')
+            print(f'Nothing detected for file: {str(capture_filepath)}')
             image_hub.send_reply(b'-1')
     # else:
     #     image_hub.send_reply(b'STOP')
