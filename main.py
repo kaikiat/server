@@ -92,8 +92,6 @@ if __name__ == "__main__":
     if not os.path.exists(stitch_path):
         print(f'Creating folder {stitch_path}')
         os.makedirs(stitch_path)
-    is_stitched = False
-
     print('Starting up server')
     while True:
         run()
