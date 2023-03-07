@@ -7,16 +7,14 @@ from collections import defaultdict
 from PIL import Image
 from run_detect import handle_detect, handle_stiching
 
-k = 5 # Change this on the actual day
 image_hub = imagezmq.ImageHub()
 capture_path = os.path.join(os.getcwd(), 'captures') 
 result_path = os.path.join(os.getcwd(), 'results') 
 stitch_path = os.path.join(os.getcwd(), 'stitch') 
 current_time = time.time()
-# UnboundLocalError: local variable 'is_stitched' referenced before assignment
-# is_stitched = False 
-duration = 360 # in seconds
-unique_results_above_confidence = defaultdict()
+k = 4 # Change this on the actual day
+duration = 350 # 
+unique_results = defaultdict()
 symbol_to_letter = {
     'one': '11',
     'two': '12',
@@ -52,30 +50,28 @@ symbol_to_letter = {
 }
 
 
-def run():
+def run(unique_results):
     rpi_name, image = image_hub.recv_image()
     
-    print(f'Received image : {rpi_name}')
-    if len(unique_results_above_confidence) >= k or \
+    print(f'Received image : {rpi_name}, Results length: {len(unique_results)} ')
+    if len(unique_results) >= k or \
         time.time() >= current_time + duration:
         if time.time() >= current_time + duration:
             print('Exceeded allowed time to complete maze')
-        handle_stiching(k,unique_results_above_confidence)
+        handle_stiching(k,unique_results)
         image_hub.close()
     elif time.time() < current_time + duration:    
         image_memory = Image.fromarray(image)
         capture_filepath = os.path.join(os.getcwd(), 'captures',
                             f'{str(int(time.time()))}.jpeg')
         image_memory.save(capture_filepath)
-        results = handle_detect(capture_filepath,unique_results_above_confidence)
-        print(f'Results {results} for file: {str(capture_filepath)}')
+        results, unique_results = handle_detect(capture_filepath,unique_results)
+        print(f'Results {results} for file: {str(capture_filepath)}, Time Taken : {str(time.time() - current_time)}s')
         if isinstance(results,str):
             image_hub.send_reply(str.encode(symbol_to_letter[results]))
         else:
             print(f'Nothing detected for file: {str(capture_filepath)}')
             image_hub.send_reply(b'-1')
-    # else:
-    #     image_hub.send_reply(b'STOP')
 
 if __name__ == "__main__":
     
@@ -94,4 +90,4 @@ if __name__ == "__main__":
         os.makedirs(stitch_path)
     print('Starting up server')
     while True:
-        run()
+        run(unique_results)

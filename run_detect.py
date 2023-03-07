@@ -30,17 +30,16 @@ def handle_detect(capture_filepath,unique_results_above_confidence):
                 # Always save images of the same symbol with higher confidence
                 if confidence > unique_results_above_confidence[id][0]:
                     unique_results_above_confidence[name] = (confidence,capture_filepath)
-                    return name
+                    return name, unique_results_above_confidence
         unique_results_above_confidence[name] = (confidence,capture_filepath)
-        return name
+        return name, unique_results_above_confidence
             
     except Exception as e:
         print(f'an error occured with filename: {capture_filepath}, {e}')
-        return None
+        return None, unique_results_above_confidence
 
 def handle_stiching(k,unique_results_above_confidence):
-    print('Handle stitching')
-    print(unique_results_above_confidence)
+    print(f'Handle stitching for {unique_results_above_confidence}')
     results = []
     for name, (confidence, filepath) in unique_results_above_confidence.items():
         results.append([name,confidence,filepath])

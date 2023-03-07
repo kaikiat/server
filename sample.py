@@ -20,7 +20,7 @@ except serial.SerialException:
 
 # STATIC VARS
 STM_COMPLETED_STRING = "COMPLE"
-STM_BUFFER_SIZE = 16
+STM_BUFFER_SIZE = 1
 TURN_LIST = ["q", "e", "z", "c"]
 SECOND_CHAR_LIST = ["w", "q", "e", "z", "c", "x", "s"]
 DIRECTIONS = ["N", "S", "E", "W"]
@@ -38,8 +38,7 @@ POSITIONS_FOR_ALGO = []
 TEMP_INSTR_STRING = []
 POSITION_ALGO_COUNT = 0
 OBSTACLE_ORDER = []
-# INST_COUNT_BY_ALGO = -1
-INST_COUNT_BY_ALGO = 0
+INST_COUNT_BY_ALGO = -1
 
 # LOCKS
 INSTRUCTIONS_LOCK = threading.Lock()
@@ -47,7 +46,8 @@ STM_LOCK = threading.Lock()
 ALGO_COORD_LOCK = threading.Lock()
 
 # CV ADDRESSING CONFIGURATION
-ADDRESS = 'tcp://192.168.1.21:5555'  # Receiver address, use ifconfig to check
+ADDRESS = 'tcp://192.168.1.21:5555'
+#ADDRESS = 'tcp://192.168.1.28:6969'  # Receiver address, use ifconfig to check
 HOST = socket.gethostname()
 DELAY = 2
 
@@ -64,12 +64,12 @@ picam2.start()
 # CV CAM FUNCTION
 def capture_and_send():
     try:
-        print('Preparing to take photo')
+
         nparray = picam2.capture_array()
         response = sender.send_image(HOST, nparray)
         return response
     except Exception as e:
-        print(e)
+        print(e.__class__.__name__)
 
 
 # Generic send functions
@@ -229,7 +229,7 @@ def process_algo_list():
     for each in instr:
         INSTRUCTIONS.append(each)
         INSTRUCTION_COUNT += 1
-        INST_COUNT_BY_ALGO += 1
+    INST_COUNT_BY_ALGO = len(instr)
     INSTRUCTIONS_LOCK.release()
     ALGO_COORD_LOCK.release()
 
@@ -237,7 +237,7 @@ def process_algo_list():
 def get_algo_instructions():
     """ Give algo positions, get from algo order+instructions """
     global POSITIONS_FOR_ALGO, TEMP_INSTR_STRING, POSITION_ALGO_COUNT, OBSTACLE_ORDER, INST_COUNT_BY_ALGO
-    ip = "192.168.1.21"
+    ip = "192.168.1.28"
     port = 6969
     s = socket.socket()
     ALGO_COORD_LOCK.acquire()
@@ -329,16 +329,17 @@ def check_if_algo_instr_completed():
         global INST_COUNT_BY_ALGO, OBSTACLE_ORDER
         time.sleep(0.6)
         ALGO_COORD_LOCK.acquire()
-        print('T5 INST_COUNT_BY_ALGO  =',INST_COUNT_BY_ALGO)
-        if INST_COUNT_BY_ALGO == 0 and OBSTACLE_ORDER:
-            INST_COUNT_BY_ALGO -= 1
+        print(f"Number of instruction:{INST_COUNT_BY_ALGO}")
+        if INST_COUNT_BY_ALGO == 0:
+            #INST_COUNT_BY_ALGO -= 1
             print("Running T5")
             byte_response = capture_and_send()
             response = int(byte_response.decode())
-            print(f"Response : {response}")
-            # encode_to_tablet(f"TARGET-{OBSTACLE_ORDER[0]}-5")
+            print(f"byte_response: {byte_response}")
+            print(f"response: {response}")
             encode_to_tablet(f"TARGET-{OBSTACLE_ORDER[0]}-{response}")
             OBSTACLE_ORDER.pop(0)
+            INST_COUNT_BY_ALGO -= 1
         ALGO_COORD_LOCK.release()
 
 
@@ -354,7 +355,7 @@ def main():
     t5 = threading.Thread(target=check_if_algo_instr_completed, name='t5')
     time.sleep(2)
     ALGO_COORD_LOCK.acquire()
-    INST_COUNT_BY_ALGO +=1
+    INST_COUNT_BY_ALGO = -1
     print(f"Total instr left{INST_COUNT_BY_ALGO}")
     ALGO_COORD_LOCK.release()
     t1.start()
@@ -370,6 +371,4 @@ def main():
 
 
 if __name__ == '__main__':
-   main()  # yeet.
-#    while True:
-#    	capture_and_send()
+    main()  # yeet.
