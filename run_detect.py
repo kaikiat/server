@@ -103,22 +103,19 @@ def draw_box(filepath, rows):
 
 
 unique_results_above_confidence = {
-    # 'bulleye': (0.9,'/Users/kaikiat/school/MDP-Group1/image-recognition/server/captures/bulleye.jpeg'),
-    # 'circle': (0.92,'/Users/kaikiat/school/MDP-Group1/image-recognition/server/captures/circle.jpeg'),
-    'T': (0.93,'/Users/kaikiat/school/MDP-Group1/image-recognition/server/captures/T.jpeg'),
-    'eight': (0.94,'/Users/kaikiat/school/MDP-Group1/image-recognition/server/captures/eight.jpeg'),
-    'down': (0.92,'/Users/kaikiat/school/MDP-Group1/image-recognition/server/captures/down.jpeg'),
-    # 'B': (0.94,'/Users/kaikiat/school/MDP-Group1/image-recognition/server/captures/B.jpeg'),
+    'V': (0.94,'/Users/kaikiat/school/server/captures/v3.jpeg'),
 }
 
 
 if __name__ == "__main__":
     start = time.time()
-    filename = 'i.jpeg'
-    # result = handle_detect(filename)
-    result = handle_stiching(3,unique_results_above_confidence)
-    end = time.time()
-    print(f"Result : {result}, Time taken: {end - start}")
+    # filename = 'v1.jpeg'
+    filename = 'v3.jpeg'
+    result = result = handle_detect(filename,{})
+    print(result)
+    result = handle_stiching(1,unique_results_above_confidence)
+    # end = time.time()
+    # print(f"Result : {result}, Time taken: {end - start}")
     
 
 
