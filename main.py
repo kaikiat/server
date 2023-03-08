@@ -5,7 +5,7 @@ import shutil
 import socket
 from collections import defaultdict
 from PIL import Image
-from run_detect import handle_detect, handle_stiching
+from run_detect import handle_detect, handle_stiching, handle_detect2
 
 image_hub = imagezmq.ImageHub()
 capture_path = os.path.join(os.getcwd(), 'captures') 
@@ -51,7 +51,17 @@ symbol_to_letter = {
 
 
 def run(unique_results):
+    
     rpi_name, image = image_hub.recv_image()
+    _, image1 = image_hub.recv_image()
+    _, image2 = image_hub.recv_image()
+
+    images = []
+    for i in range(3):
+        rpi_name, image = image_hub.recv_image()
+        if i != 2:
+            image_hub.send_reply(f"Image {i} taken")
+        images.append(image)
     
     print(f'Received image : {rpi_name}, {str(time.time() - current_time)} seconds has past.')
     print(f'Result length: {len(unique_results)}, Result : {dict(unique_results)}')
@@ -60,18 +70,21 @@ def run(unique_results):
             print('Exceeded allowed time to complete maze')
         handle_stiching(k,unique_results)
         image_hub.close()
-    elif time.time() < current_time + duration:    
-        image_memory = Image.fromarray(image)
-        capture_filepath = os.path.join(os.getcwd(), 'captures',
-                            f'{str(int(time.time()))}.jpeg')
-        image_memory.save(capture_filepath)
-        results, unique_results = handle_detect(capture_filepath,unique_results)
+    elif time.time() < current_time + duration:
+        capture_filepaths = []
+        for image in images:
+            image_memory = Image.fromarray(image)
+            capture_filepath = os.path.join(os.getcwd(), 'captures',
+                                f'{str(int(time.time()))}.jpeg')
+            image_memory.save(capture_filepath)
+        results, unique_results = handle_detect2(capture_filepaths, unique_results)
         print(f'Results {results} for file: {str(capture_filepath)}, Time Taken : {str(time.time() - current_time)}s')
         if isinstance(results,str):
             image_hub.send_reply(str.encode(symbol_to_letter[results]))
         else:
             print(f'Nothing detected for file: {str(capture_filepath)}')
             image_hub.send_reply(b'-1')
+        handle_stiching(len(unique_results), unique_results)
 
 if __name__ == "__main__":
     

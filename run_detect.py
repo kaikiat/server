@@ -13,6 +13,40 @@ yolov5_path = os.path.join(os.getcwd(),'yolov5')
 confidence_threshold = 0.8
 model = torch.hub.load(yolov5_path, 'custom', path= abs_weight_path, source='local')
 
+
+def handle_detect2(capture_filepaths,unique_results_above_confidence):
+    image_confidence = defaultdict(int)
+    paths_and_values = {}
+    for capture_filepath in capture_filepaths:
+        try:
+            data = model(capture_filepath).pandas().xyxy[0].to_dict(orient = 'records')
+            if len(data) == 0:
+                continue
+            
+            # Multiple symbols can be detected in an image, to make things simple,
+            # store the one with the highest confidence
+            id, confidence, name = data[0]['class'], data[0]['confidence'], data[0]['name']
+
+            if confidence > confidence_threshold:
+                if id in unique_results_above_confidence:
+                    # Always save images of the same symbol with higher confidence
+                    if confidence > unique_results_above_confidence[id][0]:
+                        # unique_results_above_confidence[name] = (confidence,capture_filepath)
+                        image_confidence[name] += 1
+                        if name in paths_and_values and confidence <= paths_and_values[name][0]:
+                            continue
+                        paths_and_values[name] = (confidence, capture_filepath)
+
+            # unique_results_above_confidence[name] = (confidence,capture_filepath)
+            image_confidence[name] += 1
+                
+        except Exception as e:
+            print(f'an error occured with filename: {capture_filepath}, {e}')
+            continue
+    top_name = max(image_confidence, key=image_confidence.get)
+    unique_results_above_confidence[top_name] = paths_and_values[top_name]
+    return top_name, unique_results_above_confidence
+
 def handle_detect(capture_filepath,unique_results_above_confidence):
     filename = os.path.basename(capture_filepath)
 
