@@ -1,10 +1,8 @@
 import os
 import cv2
 import time
-from collections import defaultdict
 from PIL import Image
 import torch
-
 
 result_path = os.path.join(os.getcwd(), 'results') # Stitched images are stored here 
 stiched_path = os.path.join(os.getcwd(), 'stitch') # Stitched images are stored here 
@@ -14,8 +12,6 @@ confidence_threshold = 0.85
 model = torch.hub.load(yolov5_path, 'custom', path= abs_weight_path, source='local')
 
 def handle_detect(capture_filepath,unique_results_above_confidence):
-    filename = os.path.basename(capture_filepath)
-
     try:
         data = model(capture_filepath).pandas().xyxy[0].to_dict(orient = 'records')
         if len(data) == 0:
@@ -32,7 +28,7 @@ def handle_detect(capture_filepath,unique_results_above_confidence):
                     unique_results_above_confidence[name] = (confidence,capture_filepath)
                     return name, unique_results_above_confidence
         else:
-            print(f'Unclear image as confidence score is {confidence}, requiring robot to move back')
+            print(f'unclear image as confidence score: {confidence} is below threshold, requiring robot to move back')
             return -1, unique_results_above_confidence
         unique_results_above_confidence[name] = (confidence,capture_filepath)
         return name, unique_results_above_confidence
@@ -42,15 +38,12 @@ def handle_detect(capture_filepath,unique_results_above_confidence):
         return -1, unique_results_above_confidence
 
 def handle_stiching(k,unique_results_above_confidence):
-    print(f'Handle stitching for {unique_results_above_confidence}')
     results = []
     for name, (confidence, filepath) in unique_results_above_confidence.items():
         results.append([name,confidence,filepath])
 
     # Sort by confidence in descending order
     results.sort(key=lambda x: x[1], reverse=True)
-
-    print(f'Sorted results {results}')
 
     print('Drawing boundary boxes')
     for _,_,filepath in results[:k]:

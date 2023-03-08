@@ -2,18 +2,17 @@ import imagezmq
 import time
 import os
 import shutil
-import socket
 from collections import defaultdict
 from PIL import Image
 from run_detect import handle_detect, handle_stiching
 
+# k = 6 # Change this on the actual day
+# duration = 410 
 image_hub = imagezmq.ImageHub()
 capture_path = os.path.join(os.getcwd(), 'captures') 
 result_path = os.path.join(os.getcwd(), 'results') 
 stitch_path = os.path.join(os.getcwd(), 'stitch') 
 current_time = time.time()
-k = 2# Change this on the actual day
-duration = 350 # 
 unique_results = defaultdict()
 symbol_to_letter = {
     'one': '11',
@@ -53,26 +52,28 @@ symbol_to_letter = {
 def run(unique_results):
     rpi_name, image = image_hub.recv_image()
     
-    print(f'Received image : {rpi_name}, {str(time.time() - current_time)} seconds has past.')
+    receival_time = time.time()
+    print(f'Received image : {rpi_name}, {str(time.time() - current_time)} seconds has elapsed.')
     print(f'Result length: {len(unique_results)}, Result : {dict(unique_results)}')
-    if len(unique_results) >= k or time.time() >= current_time + duration:
-        if time.time() >= current_time + duration:
-            print('Exceeded allowed time to complete maze')
-        handle_stiching(k,unique_results)
-        image_hub.close()
-    elif time.time() < current_time + duration:    
-        image_memory = Image.fromarray(image)
-        capture_filepath = os.path.join(os.getcwd(), 'captures',
-                            f'{str(int(time.time()))}.jpeg')
-        image_memory.save(capture_filepath)
-        results, unique_results = handle_detect(capture_filepath,unique_results)
-        print(f'Results {results} for file: {str(capture_filepath)}, Time Taken : {str(time.time() - current_time)}s')
-        if isinstance(results,str):
-            image_hub.send_reply(str.encode(symbol_to_letter[results]))
-        else:
-            print(f'Nothing detected for file: {str(capture_filepath)}')
-            image_hub.send_reply(b'-1')
+
+    image_memory = Image.fromarray(image)
+    capture_filepath = os.path.join(os.getcwd(), 'captures',
+                        f'{str(int(time.time()))}.jpeg')
+    image_memory.save(capture_filepath)
+    results, unique_results = handle_detect(capture_filepath,unique_results)
+
+    try:
         handle_stiching(len(unique_results),unique_results)
+    except Exception as e:
+        print('an error occured while stitching image', e)
+
+    print(f'Results {results} for file: {str(capture_filepath)}, Time Taken : {str(time.time() - receival_time)}s')
+    if isinstance(results,str):
+        image_hub.send_reply(str.encode(symbol_to_letter[results]))
+    else:
+        print(f'nothing detected for file: {str(capture_filepath)}')
+        image_hub.send_reply(b'-1')
+
 
 if __name__ == "__main__":
     
