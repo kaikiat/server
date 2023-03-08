@@ -10,7 +10,7 @@ result_path = os.path.join(os.getcwd(), 'results') # Stitched images are stored 
 stiched_path = os.path.join(os.getcwd(), 'stitch') # Stitched images are stored here 
 abs_weight_path = os.path.join(os.getcwd(), 'best.pt')
 yolov5_path = os.path.join(os.getcwd(),'yolov5') 
-confidence_threshold = 0.8
+confidence_threshold = 0.85
 model = torch.hub.load(yolov5_path, 'custom', path= abs_weight_path, source='local')
 
 def handle_detect(capture_filepath,unique_results_above_confidence):
