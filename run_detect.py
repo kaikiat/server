@@ -19,7 +19,7 @@ def handle_detect(capture_filepath,unique_results_above_confidence):
     try:
         data = model(capture_filepath).pandas().xyxy[0].to_dict(orient = 'records')
         if len(data) == 0:
-            return None
+            return -1, unique_results_above_confidence
         
         # Multiple symbols can be detected in an image, to make things simple,
         # store the one with the highest confidence

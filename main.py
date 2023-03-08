@@ -12,7 +12,7 @@ capture_path = os.path.join(os.getcwd(), 'captures')
 result_path = os.path.join(os.getcwd(), 'results') 
 stitch_path = os.path.join(os.getcwd(), 'stitch') 
 current_time = time.time()
-k = 6 # Change this on the actual day
+k = 2# Change this on the actual day
 duration = 350 # 
 unique_results = defaultdict()
 symbol_to_letter = {
@@ -72,6 +72,7 @@ def run(unique_results):
         else:
             print(f'Nothing detected for file: {str(capture_filepath)}')
             image_hub.send_reply(b'-1')
+        handle_stiching(len(unique_results),unique_results)
 
 if __name__ == "__main__":
     

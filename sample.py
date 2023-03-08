@@ -46,8 +46,8 @@ STM_LOCK = threading.Lock()
 ALGO_COORD_LOCK = threading.Lock()
 
 # CV ADDRESSING CONFIGURATION
-ADDRESS = 'tcp://192.168.1.21:5555'
-#ADDRESS = 'tcp://192.168.1.28:6969'  # Receiver address, use ifconfig to check
+# ADDRESS = 'tcp://192.168.1.25:5555'
+ADDRESS = 'tcp://192.168.1.21:5555'  # Receiver address, use ifconfig to check
 HOST = socket.gethostname()
 DELAY = 2
 
@@ -64,7 +64,6 @@ picam2.start()
 # CV CAM FUNCTION
 def capture_and_send():
     try:
-
         nparray = picam2.capture_array()
         response = sender.send_image(HOST, nparray)
         return response
@@ -323,6 +322,25 @@ def check_coords_for_algo():
             process_algo_list()
 
 
+# def check_if_algo_instr_completed():
+#     print("        T5 complete and snap")
+#     while True:
+#         global INST_COUNT_BY_ALGO, OBSTACLE_ORDER
+#         time.sleep(0.6)
+#         ALGO_COORD_LOCK.acquire()
+#         print(f"Number of instruction:{INST_COUNT_BY_ALGO}")
+#         if INST_COUNT_BY_ALGO == 0:
+#             #INST_COUNT_BY_ALGO -= 1
+#             print("Running T5")
+#             byte_response = capture_and_send()
+#             response = int(byte_response.decode())
+#             print(f"byte_response: {byte_response}")
+#             print(f"response: {response}")
+#             encode_to_tablet(f"TARGET-{OBSTACLE_ORDER[0]}-{response}")
+#             OBSTACLE_ORDER.pop(0)
+#             INST_COUNT_BY_ALGO -= 1
+#         ALGO_COORD_LOCK.release()
+
 def check_if_algo_instr_completed():
     print("        T5 complete and snap")
     while True:
@@ -333,17 +351,17 @@ def check_if_algo_instr_completed():
         if INST_COUNT_BY_ALGO == 0:
             #INST_COUNT_BY_ALGO -= 1
             print("Running T5")
+            obstacle_order = OBSTACLE_ORDER[0]
+            INST_COUNT_BY_ALGO -= 1
+            OBSTACLE_ORDER.pop(0)
+            ALGO_COORD_LOCK.release()
             byte_response = capture_and_send()
             response = int(byte_response.decode())
             print(f"byte_response: {byte_response}")
             print(f"response: {response}")
-            if response == -1:
-                print('No image capture')
-            else:
-                encode_to_tablet(f"TARGET-{OBSTACLE_ORDER[0]}-{response}")
-            OBSTACLE_ORDER.pop(0)
-            INST_COUNT_BY_ALGO -= 1
-        ALGO_COORD_LOCK.release()
+            encode_to_tablet(f"TARGET-{obstacle_order}-{response}")
+        else:
+            ALGO_COORD_LOCK.release()
 
 
 def main():
