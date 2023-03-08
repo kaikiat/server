@@ -12,7 +12,7 @@ capture_path = os.path.join(os.getcwd(), 'captures')
 result_path = os.path.join(os.getcwd(), 'results') 
 stitch_path = os.path.join(os.getcwd(), 'stitch') 
 current_time = time.time()
-k = 4 # Change this on the actual day
+k = 6 # Change this on the actual day
 duration = 350 # 
 unique_results = defaultdict()
 symbol_to_letter = {
@@ -53,9 +53,9 @@ symbol_to_letter = {
 def run(unique_results):
     rpi_name, image = image_hub.recv_image()
     
-    print(f'Received image : {rpi_name}, Results length: {len(unique_results)} ')
-    if len(unique_results) >= k or \
-        time.time() >= current_time + duration:
+    print(f'Received image : {rpi_name}, {str(time.time() - current_time)} seconds has past.')
+    print(f'Result length: {len(unique_results)}, Result : {dict(unique_results)}')
+    if len(unique_results) >= k or time.time() >= current_time + duration:
         if time.time() >= current_time + duration:
             print('Exceeded allowed time to complete maze')
         handle_stiching(k,unique_results)

@@ -337,7 +337,10 @@ def check_if_algo_instr_completed():
             response = int(byte_response.decode())
             print(f"byte_response: {byte_response}")
             print(f"response: {response}")
-            encode_to_tablet(f"TARGET-{OBSTACLE_ORDER[0]}-{response}")
+            if response == -1:
+                print('No image capture')
+            else:
+                encode_to_tablet(f"TARGET-{OBSTACLE_ORDER[0]}-{response}")
             OBSTACLE_ORDER.pop(0)
             INST_COUNT_BY_ALGO -= 1
         ALGO_COORD_LOCK.release()

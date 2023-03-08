@@ -36,7 +36,8 @@ def handle_detect(capture_filepath,unique_results_above_confidence):
             
     except Exception as e:
         print(f'an error occured with filename: {capture_filepath}, {e}')
-        return None, unique_results_above_confidence
+        # return None, unique_results_above_confidence
+        return -1, unique_results_above_confidence
 
 def handle_stiching(k,unique_results_above_confidence):
     print(f'Handle stitching for {unique_results_above_confidence}')
