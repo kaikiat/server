@@ -322,25 +322,6 @@ def check_coords_for_algo():
             process_algo_list()
 
 
-# def check_if_algo_instr_completed():
-#     print("        T5 complete and snap")
-#     while True:
-#         global INST_COUNT_BY_ALGO, OBSTACLE_ORDER
-#         time.sleep(0.6)
-#         ALGO_COORD_LOCK.acquire()
-#         print(f"Number of instruction:{INST_COUNT_BY_ALGO}")
-#         if INST_COUNT_BY_ALGO == 0:
-#             #INST_COUNT_BY_ALGO -= 1
-#             print("Running T5")
-#             byte_response = capture_and_send()
-#             response = int(byte_response.decode())
-#             print(f"byte_response: {byte_response}")
-#             print(f"response: {response}")
-#             encode_to_tablet(f"TARGET-{OBSTACLE_ORDER[0]}-{response}")
-#             OBSTACLE_ORDER.pop(0)
-#             INST_COUNT_BY_ALGO -= 1
-#         ALGO_COORD_LOCK.release()
-
 def check_if_algo_instr_completed():
     print("        T5 complete and snap")
     while True:
@@ -351,17 +332,48 @@ def check_if_algo_instr_completed():
         if INST_COUNT_BY_ALGO == 0:
             #INST_COUNT_BY_ALGO -= 1
             print("Running T5")
-            obstacle_order = OBSTACLE_ORDER[0]
-            INST_COUNT_BY_ALGO -= 1
-            OBSTACLE_ORDER.pop(0)
-            ALGO_COORD_LOCK.release()
             byte_response = capture_and_send()
             response = int(byte_response.decode())
-            print(f"byte_response: {byte_response}")
-            print(f"response: {response}")
-            encode_to_tablet(f"TARGET-{obstacle_order}-{response}")
-        else:
-            ALGO_COORD_LOCK.release()
+            print(f"byte_response: {byte_response}, integer response : {response}")
+            retake_numbers = 0
+            while response == -1:
+                if retake_numbers == 2:
+                    response = -1
+                    break
+                print('Retaking image')
+                encode_to_stm("nx010")
+                byte_response = capture_and_send()
+                retake_numbers += 1
+                response = int(byte_response.decode())
+                print(f"byte_response: {byte_response}, integer response : {response}")
+            for _ in range(retake_numbers):
+                encode_to_stm("nw010")
+            encode_to_tablet(f"TARGET-{OBSTACLE_ORDER[0]}-{response}")
+            OBSTACLE_ORDER.pop(0)
+            INST_COUNT_BY_ALGO -= 1
+        ALGO_COORD_LOCK.release()
+
+# def check_if_algo_instr_completed():
+#     print("        T5 complete and snap")
+#     while True:
+#         global INST_COUNT_BY_ALGO, OBSTACLE_ORDER
+#         time.sleep(0.6)
+#         ALGO_COORD_LOCK.acquire()
+#         print(f"Number of instruction:{INST_COUNT_BY_ALGO}")
+#         if INST_COUNT_BY_ALGO == 0:
+#             #INST_COUNT_BY_ALGO -= 1
+#             print("Running T5")
+#             obstacle_order = OBSTACLE_ORDER[0]
+#             INST_COUNT_BY_ALGO -= 1
+#             OBSTACLE_ORDER.pop(0)
+#             byte_response = capture_and_send()
+#             ALGO_COORD_LOCK.release()
+#             response = int(byte_response.decode())
+#             print(f"byte_response: {byte_response}")
+#             print(f"response: {response}")
+#             encode_to_tablet(f"TARGET-{obstacle_order}-{response}")
+#         else:
+#             ALGO_COORD_LOCK.release()
 
 
 def main():

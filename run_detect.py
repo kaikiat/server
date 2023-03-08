@@ -31,12 +31,14 @@ def handle_detect(capture_filepath,unique_results_above_confidence):
                 if confidence > unique_results_above_confidence[id][0]:
                     unique_results_above_confidence[name] = (confidence,capture_filepath)
                     return name, unique_results_above_confidence
+        else:
+            print(f'Unclear image as confidence score is {confidence}, requiring robot to move back')
+            return -1, unique_results_above_confidence
         unique_results_above_confidence[name] = (confidence,capture_filepath)
         return name, unique_results_above_confidence
             
     except Exception as e:
         print(f'an error occured with filename: {capture_filepath}, {e}')
-        # return None, unique_results_above_confidence
         return -1, unique_results_above_confidence
 
 def handle_stiching(k,unique_results_above_confidence):
