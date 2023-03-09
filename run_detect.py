@@ -114,7 +114,7 @@ if __name__ == "__main__":
     # filename = os.path.join(os.getcwd(),'captures','5.jpeg')
     # filename = os.path.join(os.getcwd(),'captures','stop.jpeg')
     # filename = os.path.join(os.getcwd(),'captures','left.jpeg')
-    filename = os.path.join(os.getcwd(),'captures','up.jpeg')
+    filename = os.path.join(os.getcwd(),'captures','5.jpeg')
     result = handle_detect(filename,unique_results)
     # handle_stiching(len(unique_results),unique_results)
     end = time.time()
