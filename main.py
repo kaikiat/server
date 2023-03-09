@@ -14,6 +14,40 @@ result_path = os.path.join(os.getcwd(), 'results')
 stitch_path = os.path.join(os.getcwd(), 'stitch') 
 current_time = time.time()
 unique_results = defaultdict()
+# symbol_to_letter = {
+#     'one': '11',
+#     'two': '12',
+#     'three': '13',
+#     'four': '14',
+#     'five': '15',
+#     'six': '16',
+#     'seven': '17',
+#     'eight': '18',
+#     'nine': '19',
+#     'A': '20',
+#     'B': '21',
+#     'C': '22',
+#     'D': '23',
+#     'E': '24',
+#     'F': '25',
+#     'G': '26',
+#     'H': '27',
+#     'S': '28',
+#     'T': '29',
+#     'U': '30',
+#     'V': '31',
+#     'W': '32',
+#     'X': '33',
+#     'Y': '34',
+#     'Z': '35',
+#     'left': '39',
+#     'up': '36',
+#     'right': '38',
+#     'down': '37',
+#     'circle': '40',
+#     'bulleye': '0'
+# }
+
 symbol_to_letter = {
     'one': '11',
     'two': '12',
@@ -40,13 +74,14 @@ symbol_to_letter = {
     'X': '33',
     'Y': '34',
     'Z': '35',
-    'left': '39',
-    'up': '36',
-    'right': '38',
-    'down': '37',
-    'circle': '40',
-    'bulleye': '0'
+    'Left': '39',
+    'Up': '36',
+    'Right': '38',
+    'Down': '37',
+    'Stop': '40',
+    'Deadend': '0'
 }
+
 
 
 def run(unique_results):
@@ -77,10 +112,10 @@ def run(unique_results):
 
 if __name__ == "__main__":
     
-    if os.path.exists(capture_path) and os.path.isdir(capture_path):
-        print(f'Removing folder {capture_path} + {result_path}')
-        shutil.rmtree(capture_path)
-        shutil.rmtree(result_path)
+    # if os.path.exists(capture_path) and os.path.isdir(capture_path):
+        # print(f'Removing folder {capture_path} + {result_path}')
+        # shutil.rmtree(capture_path)
+        # shutil.rmtree(result_path)
     if not os.path.exists(result_path):
         print(f'Creating folder {result_path}')
         os.makedirs(result_path)

@@ -3,13 +3,16 @@ import cv2
 import time
 from PIL import Image
 import torch
+from ultralytics import YOLO
+
 
 result_path = os.path.join(os.getcwd(), 'results') # Stitched images are stored here 
 stiched_path = os.path.join(os.getcwd(), 'stitch') # Stitched images are stored here 
-abs_weight_path = os.path.join(os.getcwd(), 'best.pt')
+abs_weight_path = os.path.join(os.getcwd(), 'best_theo.pt')
 yolov5_path = os.path.join(os.getcwd(),'yolov5') 
 confidence_threshold = 0.85
 model = torch.hub.load(yolov5_path, 'custom', path= abs_weight_path, source='local')
+
 
 def handle_detect(capture_filepath,unique_results_above_confidence):
     try:
@@ -19,7 +22,7 @@ def handle_detect(capture_filepath,unique_results_above_confidence):
         
         # Multiple symbols can be detected in an image, to make things simple,
         # store the one with the highest confidence
-        id, confidence, name = data[0]['class'], data[0]['confidence'], data[0]['name']
+        id, confidence, name = data[0]['class'], data[0]['confidence'], data[0]['name'].split('-')[1].strip()
 
         if confidence > confidence_threshold:
             if id in unique_results_above_confidence:
@@ -50,7 +53,8 @@ def handle_stiching(k,unique_results_above_confidence):
     for _,_,filepath in results[:k]:
         try:
             data = model(filepath).pandas().xyxy[0].to_dict(orient = 'records')
-            draw_box(filepath, data)
+            draw_box(filepath,data)
+
         except Exception as e:
             print(f'an error occured while stitching filename: {filepath}, {e}')
 
@@ -99,19 +103,26 @@ def draw_box(filepath, rows):
 
 
 unique_results = {
-    'V': (0.94,'/Users/kaikiat/school/server/captures/v2.jpeg'),
-    'H': (0.94,'/Users/kaikiat/school/server/captures/1678289675.jpeg'),
-    'G': (0.94,'/Users/kaikiat/school/server/captures/G.jpeg'),
+    # 'V': (0.94,'/Users/kaikiat/school/server/captures/v3.jpeg'),
 }
 
 
 if __name__ == "__main__":
     start = time.time()
-    # filename = 'v2.jpeg'
-    # result = handle_detect(filename,unique_results)
-    result = handle_stiching(len(unique_results),unique_results)
+    # filename = os.path.join(os.getcwd(),'captures','bulleye.jpeg')
+    # filename = os.path.join(os.getcwd(),'captures','v2.jpeg')
+    # filename = os.path.join(os.getcwd(),'captures','5.jpeg')
+    # filename = os.path.join(os.getcwd(),'captures','stop.jpeg')
+    # filename = os.path.join(os.getcwd(),'captures','left.jpeg')
+    filename = os.path.join(os.getcwd(),'captures','up.jpeg')
+    result = handle_detect(filename,unique_results)
+    # handle_stiching(len(unique_results),unique_results)
     end = time.time()
-    print(f"Result : {result}, Time taken: {end - start}")
+    # print(f"Result : {result}, Time taken: {end - start}")
+    name ,confidence = result
+    print(name)
+    print(confidence)
+    
     
 
 
