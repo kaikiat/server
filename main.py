@@ -52,7 +52,7 @@ symbol_to_letter = {
 def run(unique_results):
     rpi_name, image = image_hub.recv_image()
     
-    receival_time = time.time()
+    arrival_time = time.time()
     print(f'Received image : {rpi_name}, {str(time.time() - current_time)} seconds has elapsed.')
     print(f'Result length: {len(unique_results)}, Result : {dict(unique_results)}')
 
@@ -65,13 +65,13 @@ def run(unique_results):
     try:
         handle_stiching(len(unique_results),unique_results)
     except Exception as e:
-        print('an error occured while stitching image', e)
+        print('An error occured while stitching image', e)
 
-    print(f'Results {results} for file: {str(capture_filepath)}, Time Taken : {str(time.time() - receival_time)}s')
+    print(f'Detected {results} for {str(capture_filepath)}, Time Taken (Inclusive of stitching) : {str(time.time() - arrival_time)}s')
     if isinstance(results,str):
         image_hub.send_reply(str.encode(symbol_to_letter[results]))
     else:
-        print(f'nothing detected for file: {str(capture_filepath)}')
+        print(f'Nothing detected for file: {str(capture_filepath)}')
         image_hub.send_reply(b'-1')
 
 

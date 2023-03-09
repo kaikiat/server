@@ -6,7 +6,8 @@ import torch
 
 result_path = os.path.join(os.getcwd(), 'results') # Stitched images are stored here 
 stiched_path = os.path.join(os.getcwd(), 'stitch') # Stitched images are stored here 
-abs_weight_path = os.path.join(os.getcwd(), 'best.pt')
+# abs_weight_path = os.path.join(os.getcwd(), 'best.pt')
+abs_weight_path = os.path.join(os.getcwd(), 'best-model.pt')
 yolov5_path = os.path.join(os.getcwd(),'yolov5') 
 confidence_threshold = 0.85
 model = torch.hub.load(yolov5_path, 'custom', path= abs_weight_path, source='local')
@@ -30,6 +31,7 @@ def handle_detect(capture_filepath,unique_results_above_confidence):
         else:
             print(f'unclear image as confidence score: {confidence} is below threshold, requiring robot to move back')
             return -1, unique_results_above_confidence
+        
         unique_results_above_confidence[name] = (confidence,capture_filepath)
         return name, unique_results_above_confidence
             
