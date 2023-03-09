@@ -6,8 +6,7 @@ import torch
 
 result_path = os.path.join(os.getcwd(), 'results') # Stitched images are stored here 
 stiched_path = os.path.join(os.getcwd(), 'stitch') # Stitched images are stored here 
-# abs_weight_path = os.path.join(os.getcwd(), 'best.pt')
-abs_weight_path = os.path.join(os.getcwd(), 'best-model.pt')
+abs_weight_path = os.path.join(os.getcwd(), 'best.pt')
 yolov5_path = os.path.join(os.getcwd(),'yolov5') 
 confidence_threshold = 0.85
 model = torch.hub.load(yolov5_path, 'custom', path= abs_weight_path, source='local')
@@ -99,21 +98,18 @@ def draw_box(filepath, rows):
     print(f'result saved at {os.path.join(result_path,filename)}')
 
 
-unique_results_above_confidence = {
-    # 'bulleye': (0.9,'/Users/kaikiat/school/MDP-Group1/image-recognition/server/captures/bulleye.jpeg'),
-    # 'circle': (0.92,'/Users/kaikiat/school/MDP-Group1/image-recognition/server/captures/circle.jpeg'),
-    'T': (0.93,'/Users/kaikiat/school/MDP-Group1/image-recognition/server/captures/T.jpeg'),
-    'eight': (0.94,'/Users/kaikiat/school/MDP-Group1/image-recognition/server/captures/eight.jpeg'),
-    'down': (0.92,'/Users/kaikiat/school/MDP-Group1/image-recognition/server/captures/down.jpeg'),
-    # 'B': (0.94,'/Users/kaikiat/school/MDP-Group1/image-recognition/server/captures/B.jpeg'),
+unique_results = {
+    'V': (0.94,'/Users/kaikiat/school/server/captures/v2.jpeg'),
+    'H': (0.94,'/Users/kaikiat/school/server/captures/1678289675.jpeg'),
+    'G': (0.94,'/Users/kaikiat/school/server/captures/G.jpeg'),
 }
 
 
 if __name__ == "__main__":
     start = time.time()
-    filename = 'i.jpeg'
-    # result = handle_detect(filename)
-    result = handle_stiching(3,unique_results_above_confidence)
+    # filename = 'v2.jpeg'
+    # result = handle_detect(filename,unique_results)
+    result = handle_stiching(len(unique_results),unique_results)
     end = time.time()
     print(f"Result : {result}, Time taken: {end - start}")
     
